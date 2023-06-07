@@ -4,12 +4,32 @@ import Manager from "App/Models/Manager";
 import User from "App/Models/User";
 
 export default class ManagersController {
-  public async store({ request, response }: HttpContextContract) {
+  public async store({
+    request,
+    response,
+    bouncer,
+    auth,
+  }: HttpContextContract) {
     const body = request.body();
+
+    const userAuth = await auth.use("api").authenticate();
 
     const trx = await Database.transaction();
 
     try {
+      const bouncerUser = bouncer.forUser(userAuth);
+
+      if (
+        await bouncerUser
+          .with("AuthPolicy")
+          .denies("createEstablishmentOrManager")
+      ) {
+        return response.unauthorized({
+          Result: "Erro",
+          Message: "Você não tem autorização para executar esta operação",
+        });
+      }
+
       //Construir primeiramente o usuário do sistema
 
       const user = await User.create(
@@ -19,6 +39,7 @@ export default class ManagersController {
           userBlocked: body.userBlocked,
           userEmail: body.userEmail,
           password: body.userPassword,
+          userType: "ADMINISTRADOR",
         },
         { client: trx }
       );
@@ -34,7 +55,7 @@ export default class ManagersController {
       trx.commit();
       response.ok({
         Result: "Sucesso",
-        Message: "Moderador cadastrado com sucesso",
+        Message: "Administrador cadastrado com sucesso",
       });
     } catch (error) {
       trx.rollback();

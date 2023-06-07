@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.boolean("user_blocked").notNullable().defaultTo(false);
       table.string("user_email", 255).notNullable().unique();
       table.string("user_password", 180).notNullable();
+      table.string("user_type", 20).notNullable().defaultTo("FUNCIONARIO");
       table.string("remember_me_token").nullable();
       table.timestamp("user_created_at", { useTz: true }).notNullable();
       table.timestamp("user_updated_at", { useTz: true }).notNullable();

@@ -23,7 +23,7 @@ export default class extends BaseSchema {
         .inTable("establishments")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
-      table.string("employee_type", 20).notNullable().defaultTo("Apoio");
+      table.string("employee_type", 20).notNullable().defaultTo("APOIO");
       table.timestamp("employee_created_at", { useTz: true });
       table.timestamp("employee_updated_at", { useTz: true });
     });
