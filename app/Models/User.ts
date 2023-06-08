@@ -16,7 +16,7 @@ export default class User extends BaseModel {
   public userBlocked: boolean;
 
   @column({ serializeAs: "userEmail" })
-  public userEmail: string;
+  public userEmail: string | null;
 
   @column({ serializeAs: "userType" })
   public userType: string;

@@ -3,6 +3,8 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import Establishment from "App/Models/Establishment";
 // import Manager from "App/Models/Manager";
 import User from "App/Models/User";
+import CreateEstablishmentValidator from "App/Validators/CreateEstablishmentValidator";
+import CreateUserValidator from "App/Validators/CreateUserValidator";
 
 export default class EstablishmentsController {
   public async store({
@@ -11,8 +13,6 @@ export default class EstablishmentsController {
     auth,
     bouncer,
   }: HttpContextContract) {
-    const body = request.body();
-
     const userAuth = await auth.use("api").authenticate();
 
     const bouncerUser = bouncer.forUser(userAuth);
@@ -23,16 +23,21 @@ export default class EstablishmentsController {
 
     const trx = await Database.transaction();
 
+    const userPayload = await request.validate(CreateUserValidator);
+    const establishmentPayload = await request.validate(
+      CreateEstablishmentValidator
+    );
+
     try {
       //Construir primeiramente o usuário do sistema
 
       const user = await User.create(
         {
-          userCpfCnpj: body.userCpfCnpj,
-          userName: body.userName,
-          userBlocked: body.userBlocked,
-          userEmail: body.userEmail,
-          password: body.userPassword,
+          userCpfCnpj: userPayload.userCpfCnpj,
+          userName: userPayload.userName,
+          userBlocked: userPayload.userBlocked,
+          userEmail: userPayload.userEmail,
+          password: userPayload.userPassword,
           userType: "ESTABELECIMENTO",
         },
         { client: trx }
@@ -40,8 +45,8 @@ export default class EstablishmentsController {
 
       await Establishment.create(
         {
-          establishmentFantasy: body.establishmentFantasy,
           userId: user.userId,
+          establishmentFantasy: establishmentPayload.establishmentFantasy,
         },
         { client: trx }
       );

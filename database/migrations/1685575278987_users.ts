@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string("user_cpf_cnpj", 18).notNullable().unique();
       table.string("user_name", 100).notNullable();
       table.boolean("user_blocked").notNullable().defaultTo(false);
-      table.string("user_email", 255).notNullable().unique();
+      table.string("user_email", 255).nullable().unique();
       table.string("user_password", 180).notNullable();
       table.string("user_type", 20).notNullable().defaultTo("FUNCIONARIO");
       table.string("remember_me_token").nullable();

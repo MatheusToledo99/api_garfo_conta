@@ -2,6 +2,8 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Database from "@ioc:Adonis/Lucid/Database";
 import Employee from "App/Models/Employee";
 import User from "App/Models/User";
+import CreateEmployeeValidator from "App/Validators/CreateEmployeeValidator";
+import CreateUserValidator from "App/Validators/CreateUserValidator";
 
 export default class EmployeesController {
   public async store({
@@ -10,8 +12,6 @@ export default class EmployeesController {
     auth,
     bouncer,
   }: HttpContextContract) {
-    const body = request.body();
-
     const userAuth = await auth.use("api").authenticate();
 
     const bouncerUser = bouncer.forUser(userAuth);
@@ -20,16 +20,19 @@ export default class EmployeesController {
 
     const trx = await Database.transaction();
 
+    const userPayload = await request.validate(CreateUserValidator);
+    const employeePayload = await request.validate(CreateEmployeeValidator);
+
     try {
       //Construir primeiramente o usuário do sistema
 
       const user = await User.create(
         {
-          userCpfCnpj: body.userCpfCnpj,
-          userName: body.userName,
-          userBlocked: body.userBlocked,
-          userEmail: body.userEmail,
-          password: body.userPassword,
+          userCpfCnpj: userPayload.userCpfCnpj,
+          userName: userPayload.userName,
+          userBlocked: userPayload.userBlocked,
+          userEmail: userPayload.userEmail,
+          password: userPayload.userPassword,
           userType: "FUNCIONARIO",
         },
         { client: trx }
@@ -37,9 +40,9 @@ export default class EmployeesController {
 
       await Employee.create(
         {
-          employeeType: body.employeeType,
           userId: user.userId,
-          establishmentId: body.establishmentId,
+          employeeType: employeePayload.employeeType,
+          establishmentId: employeePayload.establishmentId,
         },
         { client: trx }
       );
