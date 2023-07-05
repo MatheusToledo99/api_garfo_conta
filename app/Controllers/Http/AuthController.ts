@@ -1,5 +1,5 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import Employee from "App/Models/Employee";
+import Database from "@ioc:Adonis/Lucid/Database";
 import Establishment from "App/Models/Establishment";
 import User from "App/Models/User";
 
@@ -18,49 +18,49 @@ export default class AuthController {
         name: user.userCpfCnpj,
       });
 
-      response.ok({ Result: "Sucesso", Message: token });
+      await Database.rawQuery(
+        "delete from api_tokens where user_id = ? and token != ?",
+        [user.userId, token.tokenHash]
+      );
+
+      response.ok({ message: token });
     } catch (error) {
-      response.badRequest({
-        Result: "Erro",
-        Message: establishment ? error : "Credenciais inválidas",
+      response.internalServerError({
+        errors: [
+          {
+            message: establishment ? error : "Credenciais inválidas",
+          },
+        ],
       });
     }
   }
 
-  public async me({ auth, response, bouncer }: HttpContextContract) {
+  public async me({ auth, response }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
     try {
-      const employee = await Employee.query()
+      const user = await User.query()
         .where("user_id", userAuth.userId)
-        .preload("userEmployee")
-        .preload("establishment", (userEstablishment) => {
-          userEstablishment.preload("userEstablishment");
-        })
-        .firstOrFail();
-
-      const userEstablishment = employee.establishment.userEstablishment;
-
-      if (
-        await bouncer
-          .forUser(userAuth)
-          .with("AuthPolicy")
-          .denies("readEmployee", userEstablishment)
-      ) {
-        return response.unauthorized({
-          Result: "Erro",
-          Message: "Autenticação não autorizada",
-        });
-      }
+        .preload("userAddress")
+        .preload("userPhone");
 
       response.ok({
-        Result: "Sucesso",
-        Message: employee,
+        message: user,
       });
     } catch (error) {
       response.internalServerError({
-        Result: "Erro",
-        Message: "Erro na requisição, tente novamente",
+        errors: [
+          {
+            message: "Erro na requisição, tente novamente",
+          },
+        ],
       });
     }
+  }
+
+  public async logout({ auth, response }: HttpContextContract) {
+    await auth.use("api").revoke();
+    response.ok({
+      message: "Logout realizado com sucesso",
+    });
   }
 }

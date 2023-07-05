@@ -10,26 +10,17 @@ export default class ManagersController {
     bouncer,
     auth,
   }: HttpContextContract) {
-    const body = request.body();
-
     const userAuth = await auth.use("api").authenticate();
+
+    const bouncerUser = bouncer.forUser(userAuth);
+
+    await bouncerUser.with("AuthPolicy").authorize("onlyManager");
 
     const trx = await Database.transaction();
 
+    const body = request.body();
+
     try {
-      const bouncerUser = bouncer.forUser(userAuth);
-
-      if (
-        await bouncerUser
-          .with("AuthPolicy")
-          .denies("createEstablishmentOrManager")
-      ) {
-        return response.unauthorized({
-          Result: "Erro",
-          Message: "Você não tem autorização para executar esta operação",
-        });
-      }
-
       //Construir primeiramente o usuário do sistema
 
       const user = await User.create(
@@ -54,13 +45,17 @@ export default class ManagersController {
 
       trx.commit();
       response.ok({
-        Result: "Sucesso",
-        Message: "Administrador cadastrado com sucesso",
+        message: "Administrador cadastrado com sucesso",
       });
     } catch (error) {
       trx.rollback();
-      response.badRequest({
-        Result: "Erro",
+      response.internalServerError({
+        errors: [
+          {
+            message:
+              "Ocorreu um erro, verifique as informações e tente novamente",
+          },
+        ],
       });
     }
   }

@@ -16,7 +16,7 @@ export default class EmployeesController {
 
     const bouncerUser = bouncer.forUser(userAuth);
 
-    await bouncerUser.with("AuthPolicy").authorize("createEmployee");
+    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
 
     const trx = await Database.transaction();
 
@@ -49,14 +49,17 @@ export default class EmployeesController {
 
       trx.commit();
       response.ok({
-        Result: "Sucesso",
-        Message: "Usuário cadastrado com sucesso",
+        message: "Usuário cadastrado com sucesso",
       });
     } catch (error) {
       trx.rollback();
-      response.badRequest({
-        Result: "Erro",
-        Message: "Ocorreu um erro inesperado, verifique as informações",
+      response.internalServerError({
+        errors: [
+          {
+            message:
+              "Ocorreu um erro, verifique as informações e tente novamente",
+          },
+        ],
       });
     }
   }
@@ -64,21 +67,28 @@ export default class EmployeesController {
     try {
       const employee = await Employee.query()
         .where("employee_id", params.id)
-        .preload("userEmployee")
+        .preload("userEmployee", (infoUser) => {
+          infoUser.preload("userPhone");
+          infoUser.preload("userAddress");
+        })
         .preload("establishment", (userEstablishment) => {
           userEstablishment.preload("userEstablishment");
         })
         .firstOrFail();
 
       response.ok({
-        Result: "Sucesso",
-        Message: {
+        message: {
           employee,
         },
       });
     } catch (error) {
       response.internalServerError({
-        Result: "Erro",
+        errors: [
+          {
+            message:
+              "Ocorreu um erro, verifique as informações e tente novamente",
+          },
+        ],
       });
     }
   }

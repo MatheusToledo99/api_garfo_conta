@@ -1,6 +1,16 @@
 import { DateTime } from "luxon";
 import Hash from "@ioc:Adonis/Core/Hash";
-import { column, beforeSave, BaseModel } from "@ioc:Adonis/Lucid/Orm";
+import {
+  column,
+  beforeSave,
+  BaseModel,
+  hasMany,
+  HasMany,
+  hasOne,
+  HasOne,
+} from "@ioc:Adonis/Lucid/Orm";
+import Phone from "./Phone";
+import Address from "./Address";
 
 export default class User extends BaseModel {
   @column({ isPrimary: true, serializeAs: "userId" })
@@ -39,4 +49,16 @@ export default class User extends BaseModel {
       user.password = await Hash.make(user.password);
     }
   }
+
+  @hasMany(() => Phone, {
+    foreignKey: "userId",
+    localKey: "userId",
+  })
+  public userPhone: HasMany<typeof Phone>;
+
+  @hasOne(() => Address, {
+    foreignKey: "userId",
+    localKey: "userId",
+  })
+  public userAddress: HasOne<typeof Address>;
 }

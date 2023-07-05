@@ -1,7 +1,6 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Database from "@ioc:Adonis/Lucid/Database";
 import Establishment from "App/Models/Establishment";
-// import Manager from "App/Models/Manager";
 import User from "App/Models/User";
 import CreateEstablishmentValidator from "App/Validators/CreateEstablishmentValidator";
 import CreateUserValidator from "App/Validators/CreateUserValidator";
@@ -17,9 +16,7 @@ export default class EstablishmentsController {
 
     const bouncerUser = bouncer.forUser(userAuth);
 
-    await bouncerUser
-      .with("AuthPolicy")
-      .authorize("createEstablishmentOrManager");
+    await bouncerUser.with("AuthPolicy").authorize("onlyManager");
 
     const trx = await Database.transaction();
 
@@ -53,15 +50,18 @@ export default class EstablishmentsController {
 
       trx.commit();
       response.ok({
-        Result: "Sucesso",
-        Message: "Estabelecimento cadastrado com sucesso",
+        message: "Estabelecimento cadastrado com sucesso",
       });
     } catch (error) {
       trx.rollback();
       console.log(error);
-      response.badRequest({
-        Result: "Erro",
-        Message: "Ocorreu um erro inesperado, verifique as informações",
+      response.internalServerError({
+        errors: [
+          {
+            message:
+              "Ocorreu um erro, verifique as informações e tente novamente",
+          },
+        ],
       });
     }
   }
@@ -74,13 +74,16 @@ export default class EstablishmentsController {
         .firstOrFail();
 
       response.ok({
-        Result: "Sucesso",
-        Message: establishment,
+        message: establishment,
       });
     } catch (error) {
       response.internalServerError({
-        Result: "Erro",
-        Message: "Não foi possível encontrar este estabelecimento",
+        errors: [
+          {
+            message:
+              "Ocorreu um erro, verifique as informações e tente novamente",
+          },
+        ],
       });
     }
   }
