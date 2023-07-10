@@ -112,8 +112,6 @@ export default class AddressesController {
     }
 
     try {
-      const address = await Address.findByOrFail("address_id", params.id);
-
       await address.delete();
 
       response.ok({
