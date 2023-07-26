@@ -166,4 +166,31 @@ export default class BillsController {
       });
     }
   }
+
+  public async checkBusy({ params, auth, response }: HttpContextContract) {
+    await auth.use("api").authenticate();
+    try {
+      const bill = await Bill.findByOrFail("bill_id", params.id);
+
+      if (bill.billBusy) {
+        return response.ok({
+          message: {
+            busy: true,
+          },
+        });
+      }
+
+      return response.ok({
+        message: { busy: false },
+      });
+    } catch (error) {
+      response.internalServerError({
+        errors: [
+          {
+            message: "Ocorreu um erro, comanda não encontrada",
+          },
+        ],
+      });
+    }
+  }
 }

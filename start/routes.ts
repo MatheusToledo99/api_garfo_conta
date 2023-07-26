@@ -20,5 +20,7 @@ Route.group(() => {
   // *********************** ROTAS PERSONALIZADAS ***********************
   Route.get("bill/all/:id", "BillsController.allBillsByEstablishment");
   Route.get("category/all/:id", "CategoriesController.allCategoriesProducts");
+  Route.get("bill/check/:id", "BillsController.checkBusy");
+
   //
 }).middleware("auth");
