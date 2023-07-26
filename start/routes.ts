@@ -10,6 +10,8 @@ Route.group(() => {
   Route.resource("address", "AddressesController").apiOnly();
   Route.resource("phone", "PhonesController").apiOnly();
   Route.resource("bill", "BillsController").apiOnly();
+  Route.resource("category", "CategoriesController").apiOnly().except(["show"]);
+  Route.resource("product", "ProductsController").apiOnly().except(["show"]);
 
   // ************************ ROTAS AUTENTICAÇÃO ************************
   Route.get("auth/me", "AuthController.me");
@@ -17,4 +19,6 @@ Route.group(() => {
 
   // *********************** ROTAS PERSONALIZADAS ***********************
   Route.get("bill/all/:id", "BillsController.allBillsByEstablishment");
+  Route.get("category/all/:id", "CategoriesController.allCategoriesProducts");
+  //
 }).middleware("auth");
