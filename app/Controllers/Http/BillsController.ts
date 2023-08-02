@@ -11,9 +11,10 @@ export default class BillsController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     const existsBill = await Bill.query()
       .where("bill_name", request.input("billName"))
@@ -69,9 +70,10 @@ export default class BillsController {
 
     const bill = await Bill.findByOrFail("bill_id", params.id);
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
       bill.merge(body);
@@ -100,9 +102,10 @@ export default class BillsController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
       const bill = await Bill.findByOrFail("address_id", params.id);
@@ -142,11 +145,8 @@ export default class BillsController {
 
   public async allBillsByEstablishment({
     params,
-    auth,
     response,
   }: HttpContextContract) {
-    await auth.use("api").authenticate();
-
     try {
       const bill = await Bill.query().where("establishment_id", params.id);
       response.ok({

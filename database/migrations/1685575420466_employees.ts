@@ -23,7 +23,6 @@ export default class extends BaseSchema {
         .inTable("establishments")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
-      table.string("employee_type", 20).notNullable().defaultTo("APOIO");
     });
   }
 

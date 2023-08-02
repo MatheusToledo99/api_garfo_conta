@@ -1,34 +1,17 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Address from "App/Models/Address";
-import Establishment from "App/Models/Establishment";
 import CreateAddressValidator from "App/Validators/CreateAddressValidator";
 
 export default class AddressesController {
-  public async store({
-    request,
-    response,
-    auth,
-    bouncer,
-  }: HttpContextContract) {
+  public async store({ request, response, auth }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
     const addressPayload = await request.validate(CreateAddressValidator);
 
-    const establishment = await Establishment.findBy(
-      "user_id",
-      request.input("userId")
-    );
-
-    if (establishment) {
-      const bouncerUser = bouncer.forUser(userAuth);
-
-      await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
-    }
-
     try {
       //Criar endereço validado
       await Address.create({
-        userId: addressPayload.userId,
+        userId: userAuth.userId,
         addressCep: addressPayload.addressCep,
         addressStreet: addressPayload.addressStreet,
         addressNumber: addressPayload.addressNumber,
@@ -57,24 +40,16 @@ export default class AddressesController {
     response,
     request,
     params,
-    bouncer,
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const body = request.body();
-
-    const address = await Address.findByOrFail("address_id", params.id);
-
-    const establishment = await Establishment.findBy("user_id", address.userId);
-
-    if (establishment) {
-      const bouncerUser = bouncer.forUser(userAuth);
-
-      await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
-    }
-
     try {
-      address.merge(body);
+      const address = await Address.query()
+        .where("address_id", params.id)
+        .andWhere("user_id", userAuth.userId)
+        .firstOrFail();
+
+      address.merge(request.body());
 
       await address.save();
 
@@ -93,25 +68,15 @@ export default class AddressesController {
     }
   }
 
-  public async destroy({
-    params,
-    auth,
-    response,
-    bouncer,
-  }: HttpContextContract) {
+  public async destroy({ params, auth, response }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const address = await Address.findByOrFail("address_id", params.id);
-
-    const establishment = await Establishment.findBy("user_id", address.userId);
-
-    if (establishment) {
-      const bouncerUser = bouncer.forUser(userAuth);
-
-      await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
-    }
-
     try {
+      const address = await Address.query()
+        .where("address_id", params.id)
+        .andWhere("user_id", userAuth.userId)
+        .firstOrFail();
+
       await address.delete();
 
       response.ok({
@@ -129,9 +94,7 @@ export default class AddressesController {
     }
   }
 
-  public async show({ params, auth, response }: HttpContextContract) {
-    await auth.use("api").authenticate();
-
+  public async show({ params, response }: HttpContextContract) {
     try {
       const address = await Address.findByOrFail("address_id", params.id);
 

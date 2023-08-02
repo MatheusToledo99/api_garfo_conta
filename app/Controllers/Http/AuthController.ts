@@ -1,6 +1,4 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import Database from "@ioc:Adonis/Lucid/Database";
-import Establishment from "App/Models/Establishment";
 import User from "App/Models/User";
 
 export default class AuthController {
@@ -8,27 +6,24 @@ export default class AuthController {
     const userCpfCnpj = request.input("userCpfCnpj");
     const userPassword = request.input("userPassword");
     const user = await User.findByOrFail("user_cpf_cnpj", userCpfCnpj);
-    const establishment = await Establishment.findBy("user_id", user.userId);
 
     try {
-      if (establishment) throw "Estabelecimentos não podem ser autenticados";
-
       const token = await auth.use("api").attempt(userCpfCnpj, userPassword, {
         expiresIn: "30days",
         name: user.userCpfCnpj,
       });
 
-      await Database.rawQuery(
-        "delete from api_tokens where user_id = ? and token != ?",
-        [user.userId, token.tokenHash]
-      );
+      // await Database.rawQuery(
+      //   "delete from api_tokens where user_id = ? and token != ?",
+      //   [user.userId, token.tokenHash]
+      // );
 
       response.ok({ message: token });
     } catch (error) {
       response.internalServerError({
         errors: [
           {
-            message: establishment ? error : "Credenciais inválidas",
+            message: "Credenciais inválidas",
           },
         ],
       });
@@ -50,7 +45,7 @@ export default class AuthController {
       response.internalServerError({
         errors: [
           {
-            message: "Erro na requisição, tente novamente",
+            message: "Erro ao autenticar",
           },
         ],
       });
@@ -58,9 +53,19 @@ export default class AuthController {
   }
 
   public async logout({ auth, response }: HttpContextContract) {
-    await auth.use("api").revoke();
-    response.ok({
-      message: "Logout realizado com sucesso",
-    });
+    try {
+      await auth.use("api").revoke();
+      response.ok({
+        message: "Sucesso ao realizar o logout",
+      });
+    } catch (error) {
+      response.internalServerError({
+        errors: [
+          {
+            message: "Erro ao realizar o logout",
+          },
+        ],
+      });
+    }
   }
 }

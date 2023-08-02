@@ -6,8 +6,6 @@ export default class CreateEmployeeValidator {
 
   public schema = schema.create({
     establishmentId: schema.number(),
-
-    employeeType: schema.string.optional(),
   });
 
   public messages: CustomMessages = {

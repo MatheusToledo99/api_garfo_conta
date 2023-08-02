@@ -11,8 +11,10 @@ export default class CategoriesController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     const categoryPayload = await request.validate(CreateCategoryValidator);
 
@@ -48,9 +50,10 @@ export default class CategoriesController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
       const category = await Category.findByOrFail("category_id", params.id);
@@ -82,13 +85,14 @@ export default class CategoriesController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const category = await Category.findByOrFail("category_id", params.id);
-
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
+      const category = await Category.findByOrFail("category_id", params.id);
+
       await category.delete();
 
       response.ok({

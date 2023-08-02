@@ -14,9 +14,10 @@ export default class EmployeesController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     const trx = await Database.transaction();
 
@@ -41,7 +42,6 @@ export default class EmployeesController {
       await Employee.create(
         {
           userId: user.userId,
-          employeeType: employeePayload.employeeType,
           establishmentId: employeePayload.establishmentId,
         },
         { client: trx }
@@ -63,6 +63,7 @@ export default class EmployeesController {
       });
     }
   }
+
   public async show({ response, params }: HttpContextContract) {
     try {
       const employee = await Employee.query()

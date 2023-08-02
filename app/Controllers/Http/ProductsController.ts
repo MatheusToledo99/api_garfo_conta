@@ -11,8 +11,10 @@ export default class ProductsController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     const productPayload = await request.validate(CreateProductValidator);
 
@@ -53,9 +55,10 @@ export default class ProductsController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
       const product = await Product.findByOrFail("product_id", params.id);
@@ -87,13 +90,14 @@ export default class ProductsController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const product = await Product.findByOrFail("product_id", params.id);
-
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManagerOrMaster");
+    await bouncer
+      .forUser(userAuth)
+      .with("AuthPolicy")
+      .authorize("manager_establishment");
 
     try {
+      const product = await Product.findByOrFail("product_id", params.id);
+
       await product.delete();
 
       response.ok({

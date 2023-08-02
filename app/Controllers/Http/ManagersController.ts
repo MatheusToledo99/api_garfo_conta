@@ -12,9 +12,7 @@ export default class ManagersController {
   }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
 
-    const bouncerUser = bouncer.forUser(userAuth);
-
-    await bouncerUser.with("AuthPolicy").authorize("onlyManager");
+    await bouncer.forUser(userAuth).with("AuthPolicy").authorize("manager");
 
     const trx = await Database.transaction();
 
@@ -37,7 +35,6 @@ export default class ManagersController {
 
       await Manager.create(
         {
-          managerCode: body.managerCode,
           userId: user.userId,
         },
         { client: trx }

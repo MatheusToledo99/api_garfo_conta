@@ -1,6 +1,6 @@
 import Route from "@ioc:Adonis/Core/Route";
 
-Route.post("login", "AuthController.login");
+Route.post("api/v1/login", "AuthController.login");
 
 Route.group(() => {
   // **************************** ROTAS CRUD ****************************
@@ -30,4 +30,6 @@ Route.group(() => {
   Route.post("order/:id/invoice", "OrdersController.invoiceOrder");
 
   //
-}).middleware("auth");
+})
+  .middleware("auth")
+  .prefix("api/v1");

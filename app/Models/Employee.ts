@@ -12,9 +12,6 @@ export default class Employee extends BaseModel {
   @column({ serializeAs: "establishmentId" })
   public establishmentId: number;
 
-  @column({ serializeAs: "employeeType" })
-  public employeeType: string;
-
   @belongsTo(() => Establishment, {
     localKey: "establishmentId",
     foreignKey: "establishmentId",
