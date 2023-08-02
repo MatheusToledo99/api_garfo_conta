@@ -31,8 +31,6 @@ export default class extends BaseSchema {
       table.string("product_image", 500).nullable();
       table.string("product_description", 500).nullable();
       table.boolean("product_blocked").notNullable().defaultTo(false);
-      table.timestamp("product_created_at", { useTz: true });
-      table.timestamp("product_updated_at", { useTz: true });
     });
   }
 

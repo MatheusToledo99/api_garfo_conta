@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import Establishment from "./Establishment";
 import User from "./User";
@@ -15,12 +14,6 @@ export default class Employee extends BaseModel {
 
   @column({ serializeAs: "employeeType" })
   public employeeType: string;
-
-  @column.dateTime({ autoCreate: true, serializeAs: null })
-  public employeeCreatedAt: DateTime;
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
-  public employeeUpdatedAt: DateTime;
 
   @belongsTo(() => Establishment, {
     localKey: "establishmentId",

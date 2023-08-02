@@ -16,8 +16,6 @@ export default class extends BaseSchema {
         .onUpdate("CASCADE");
       table.string("bill_name", 180).notNullable();
       table.boolean("bill_busy").notNullable().defaultTo(false);
-      table.timestamp("bill_created_at", { useTz: true });
-      table.timestamp("bill_updated_at", { useTz: true });
     });
   }
 

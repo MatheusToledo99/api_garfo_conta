@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import Order from "./Order";
 
@@ -14,12 +13,6 @@ export default class Bill extends BaseModel {
 
   @column({ serializeAs: "billBusy" })
   public billBusy: boolean;
-
-  @column.dateTime({ autoCreate: true, serializeAs: null })
-  public billCreatedAt: DateTime;
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
-  public billUpdatedAt: DateTime;
 
   @hasMany(() => Order, {
     foreignKey: "billId",

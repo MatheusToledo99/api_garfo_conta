@@ -24,8 +24,6 @@ export default class extends BaseSchema {
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       table.string("employee_type", 20).notNullable().defaultTo("APOIO");
-      table.timestamp("employee_created_at", { useTz: true });
-      table.timestamp("employee_updated_at", { useTz: true });
     });
   }
 

@@ -16,8 +16,6 @@ export default class extends BaseSchema {
         .onUpdate("CASCADE");
       table.string("category_name", 255).notNullable();
       table.string("category_description", 500).nullable();
-      table.timestamp("created_at", { useTz: true });
-      table.timestamp("updated_at", { useTz: true });
     });
   }
 

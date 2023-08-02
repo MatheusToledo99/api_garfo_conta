@@ -22,8 +22,6 @@ export default class extends BaseSchema {
       table.string("address_city", 180).notNullable();
       table.string("address_district", 180).notNullable();
       table.string("address_uf", 2).notNullable();
-      table.timestamp("address_created_at", { useTz: true });
-      table.timestamp("address_updated_at", { useTz: true });
     });
   }
   public async down() {

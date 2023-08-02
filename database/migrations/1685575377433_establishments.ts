@@ -17,7 +17,6 @@ export default class extends BaseSchema {
         .onUpdate("CASCADE");
       table.string("establishment_fantasy", 100);
       table.timestamp("establishment_created_at", { useTz: true });
-      table.timestamp("establishment_updated_at", { useTz: true });
     });
   }
 

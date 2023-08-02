@@ -16,8 +16,6 @@ export default class extends BaseSchema {
         .onUpdate("CASCADE");
       table.string("phone_number", 20).notNullable();
       table.string("phone_observation", 180).nullable();
-      table.timestamp("phone_created_at", { useTz: true });
-      table.timestamp("phone_updated_at", { useTz: true });
     });
   }
 

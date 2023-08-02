@@ -22,7 +22,6 @@ export default class extends BaseSchema {
         .inTable("orders")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
-      table.string("product_order_status").notNullable().defaultTo("ABERTO");
     });
   }
 

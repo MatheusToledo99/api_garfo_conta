@@ -9,7 +9,4 @@ export default class ProductOrder extends BaseModel {
 
   @column({ serializeAs: "orderId" })
   public orderId: number;
-
-  @column({ serializeAs: "productOrderStatus" })
-  public productOrderStatus: string | null;
 }

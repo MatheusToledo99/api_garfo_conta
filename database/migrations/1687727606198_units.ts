@@ -7,8 +7,6 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments("unit_id").primary();
       table.string("unit_description", 4).notNullable().unique();
-      table.timestamp("unit_created_at", { useTz: true });
-      table.timestamp("unit_updated_at", { useTz: true });
     });
   }
 

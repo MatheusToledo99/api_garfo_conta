@@ -9,11 +9,10 @@ export default class extends BaseSeeder {
       userName: "Matheus José Ferreira Toledo",
       userBlocked: false,
       userEmail: "matheusjftoledo@gmail.com",
-      password: "moderador",
+      password: "adm",
       userType: "ADMINISTRADOR",
     });
     await Manager.create({
-      managerCode: "f3047",
       userId: user.userId,
     });
   }

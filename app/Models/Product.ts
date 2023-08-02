@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
 export default class Product extends BaseModel {
@@ -25,10 +24,4 @@ export default class Product extends BaseModel {
 
   @column({ serializeAs: "productDescription" })
   public productDescription: string | null;
-
-  @column.dateTime({ autoCreate: true, serializeAs: null })
-  public productCreatedAt: DateTime;
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
-  public productUpdatedAt: DateTime;
 }
