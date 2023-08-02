@@ -5,6 +5,9 @@ export default class extends BaseSeeder {
   public async run() {
     await Payment.createMany([
       {
+        paymentDescription: "Indefinido",
+      },
+      {
         paymentDescription: "Dinheiro",
       },
       {

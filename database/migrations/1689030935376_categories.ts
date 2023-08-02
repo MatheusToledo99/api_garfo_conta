@@ -8,7 +8,6 @@ export default class extends BaseSchema {
       table.increments("category_id").primary();
       table
         .integer("establishment_id")
-        .unique()
         .unsigned()
         .notNullable()
         .references("establishment_id")

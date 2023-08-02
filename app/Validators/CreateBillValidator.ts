@@ -8,7 +8,6 @@ export default class CreateBillValidator {
       rules.exists({ table: "establishments", column: "establishment_id" }),
     ]),
     billName: schema.string({ trim: true }, [rules.maxLength(180)]),
-    billBusy: schema.boolean.optional(),
   });
 
   public messages: CustomMessages = {

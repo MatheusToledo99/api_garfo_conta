@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import Order from "./Order";
 
 export default class Bill extends BaseModel {
   @column({ isPrimary: true })
@@ -19,4 +20,14 @@ export default class Bill extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   public billUpdatedAt: DateTime;
+
+  @hasMany(() => Order, {
+    foreignKey: "billId",
+    localKey: "billId",
+    onQuery(query) {
+      query.where("order_open", true);
+    },
+    serializeAs: "orders",
+  })
+  public ordersOpen: HasMany<typeof Order>;
 }

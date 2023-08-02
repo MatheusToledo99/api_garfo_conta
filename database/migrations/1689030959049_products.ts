@@ -8,7 +8,6 @@ export default class extends BaseSchema {
       table.increments("product_id").primary();
       table
         .integer("category_id")
-        .unique()
         .unsigned()
         .notNullable()
         .references("category_id")
@@ -17,7 +16,6 @@ export default class extends BaseSchema {
         .onUpdate("CASCADE");
       table
         .integer("unit_id")
-        .unique()
         .unsigned()
         .notNullable()
         .references("unit_id")

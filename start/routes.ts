@@ -12,6 +12,7 @@ Route.group(() => {
   Route.resource("bill", "BillsController").apiOnly();
   Route.resource("category", "CategoriesController").apiOnly().except(["show"]);
   Route.resource("product", "ProductsController").apiOnly().except(["show"]);
+  Route.resource("order", "OrdersController").apiOnly();
 
   // ************************ ROTAS AUTENTICAÇÃO ************************
   Route.get("auth/me", "AuthController.me");
@@ -20,7 +21,12 @@ Route.group(() => {
   // *********************** ROTAS PERSONALIZADAS ***********************
   Route.get("bill/all/:id", "BillsController.allBillsByEstablishment");
   Route.get("category/all/:id", "CategoriesController.allCategoriesProducts");
-  Route.get("bill/check/:id", "BillsController.checkBusy");
+  Route.get("bill/open/:id", "BillsController.openOrderBill");
+  Route.post("order/:id/product", "OrdersController.addToOrder");
+  Route.delete(
+    "order/:orderId/product/:productId",
+    "OrdersController.deleteToOrder"
+  );
 
   //
 }).middleware("auth");

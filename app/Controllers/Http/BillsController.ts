@@ -37,7 +37,7 @@ export default class BillsController {
       await Bill.create({
         establishmentId: billPayload.establishmentId,
         billName: billPayload.billName,
-        billBusy: billPayload.billBusy,
+        billBusy: false,
       });
 
       response.ok({
@@ -85,8 +85,7 @@ export default class BillsController {
       response.internalServerError({
         errors: [
           {
-            message:
-              "Ocorreu um erro, verifique as informações e tente novamente",
+            message: "Erro ao atualizar os dados",
           },
         ],
       });
@@ -117,17 +116,14 @@ export default class BillsController {
       response.internalServerError({
         errors: [
           {
-            message:
-              "Ocorreu um erro, verifique as informações e tente novamente",
+            message: "Erro ao deletar esta comanda",
           },
         ],
       });
     }
   }
 
-  public async show({ params, auth, response }: HttpContextContract) {
-    await auth.use("api").authenticate();
-
+  public async show({ params, response }: HttpContextContract) {
     try {
       const bill = await Bill.findByOrFail("bill_id", params.id);
       response.ok({
@@ -137,7 +133,7 @@ export default class BillsController {
       response.internalServerError({
         errors: [
           {
-            message: "Ocorreu um erro, comanda não encontrada",
+            message: "Erro ao recuperar a comanda",
           },
         ],
       });
@@ -160,34 +156,28 @@ export default class BillsController {
       response.internalServerError({
         errors: [
           {
-            message: "Ocorreu um erro, comanda não encontrada",
+            message: "Erro ao recuperar as comandas",
           },
         ],
       });
     }
   }
 
-  public async checkBusy({ params, auth, response }: HttpContextContract) {
-    await auth.use("api").authenticate();
+  public async openOrderBill({ params, response }: HttpContextContract) {
     try {
-      const bill = await Bill.findByOrFail("bill_id", params.id);
+      const bill = await Bill.query()
+        .preload("ordersOpen", (products) => {
+          products.preload("products");
+        })
+        .where("bill_id", params.id)
+        .firstOrFail();
 
-      if (bill.billBusy) {
-        return response.ok({
-          message: {
-            busy: true,
-          },
-        });
-      }
-
-      return response.ok({
-        message: { busy: false },
-      });
+      response.ok({ bill });
     } catch (error) {
       response.internalServerError({
         errors: [
           {
-            message: "Ocorreu um erro, comanda não encontrada",
+            message: "Erro ao recuperar os itens",
           },
         ],
       });
