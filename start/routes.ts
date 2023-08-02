@@ -27,6 +27,7 @@ Route.group(() => {
     "order/:orderId/product/:productId",
     "OrdersController.deleteToOrder"
   );
+  Route.post("order/:id/invoice", "OrdersController.invoiceOrder");
 
   //
 }).middleware("auth");
