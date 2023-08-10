@@ -5,9 +5,9 @@ export default class AuthController {
   public async login({ auth, request, response }: HttpContextContract) {
     const userCpfCnpj = request.input("userCpfCnpj");
     const userPassword = request.input("userPassword");
-    const user = await User.findByOrFail("user_cpf_cnpj", userCpfCnpj);
 
     try {
+      const user = await User.findByOrFail("user_cpf_cnpj", userCpfCnpj);
       const token = await auth.use("api").attempt(userCpfCnpj, userPassword, {
         expiresIn: "30days",
         name: user.userCpfCnpj,
@@ -36,7 +36,8 @@ export default class AuthController {
       const user = await User.query()
         .where("user_id", userAuth.userId)
         .preload("userAddress")
-        .preload("userPhone");
+        .preload("userPhone")
+        .firstOrFail();
 
       response.ok({
         message: user,
