@@ -51,7 +51,6 @@ export default class EstablishmentsController {
       });
     } catch (error) {
       trx.rollback();
-      console.log(error);
       response.internalServerError({
         errors: [
           {

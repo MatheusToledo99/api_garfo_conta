@@ -21,6 +21,7 @@ export default class Employee extends BaseModel {
   @belongsTo(() => User, {
     localKey: "userId",
     foreignKey: "userId",
+    serializeAs: "user",
   })
   public userEmployee: BelongsTo<typeof User>;
 }

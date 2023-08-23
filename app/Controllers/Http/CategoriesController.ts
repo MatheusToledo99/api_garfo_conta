@@ -29,7 +29,6 @@ export default class CategoriesController {
         message: "Categoria cadastrada com sucesso",
       });
     } catch (error) {
-      console.log(error);
       response.internalServerError({
         errors: [
           {

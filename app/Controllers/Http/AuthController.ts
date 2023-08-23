@@ -1,4 +1,6 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import Employee from "App/Models/Employee";
+import Establishment from "App/Models/Establishment";
 import User from "App/Models/User";
 
 export default class AuthController {
@@ -33,11 +35,25 @@ export default class AuthController {
   public async me({ auth, response }: HttpContextContract) {
     const userAuth = await auth.use("api").authenticate();
     try {
-      const user = await User.query()
-        .where("user_id", userAuth.userId)
-        .preload("userAddress")
-        .preload("userPhone")
-        .firstOrFail();
+      let user;
+      if (userAuth.userType == "FUNCIONARIO") {
+        user = await Employee.query()
+          .where("user_id", userAuth.userId)
+          .preload("userEmployee", (user) => {
+            user.preload("userAddress"), user.preload("userPhone");
+          })
+          .preload("establishment", (establishment) => {
+            establishment.preload("userEstablishment");
+          })
+          .firstOrFail();
+      } else {
+        user = await Establishment.query()
+          .where("user_id", userAuth.userId)
+          .preload("userEstablishment", (user) => {
+            user.preload("userAddress"), user.preload("userPhone");
+          })
+          .firstOrFail();
+      }
 
       response.ok({
         message: user,

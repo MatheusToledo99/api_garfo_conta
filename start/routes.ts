@@ -13,6 +13,7 @@ Route.group(() => {
   Route.resource("category", "CategoriesController").apiOnly().except(["show"]);
   Route.resource("product", "ProductsController").apiOnly().except(["show"]);
   Route.resource("order", "OrdersController").apiOnly();
+  Route.get("payment", "PaymentsController.getPayments");
 
   // ************************ ROTAS AUTENTICAÇÃO ************************
   Route.get("auth/me", "AuthController.me");
@@ -22,6 +23,7 @@ Route.group(() => {
   Route.get("bill/all/:id", "BillsController.allBillsByEstablishment");
   Route.get("category/all/:id", "CategoriesController.allCategoriesProducts");
   Route.get("bill/open/:id", "BillsController.openOrderBill");
+  Route.get("order/bill/:id", "OrdersController.orderByBill");
   Route.post("order/:id/product", "OrdersController.addToOrder");
   Route.delete(
     "order/:orderId/product/:productId",

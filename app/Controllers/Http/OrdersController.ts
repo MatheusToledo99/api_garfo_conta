@@ -9,9 +9,9 @@ import CreateOrderValidator from "App/Validators/CreateOrderValidator";
 export default class OrdersController {
   public async store({ request, response }: HttpContextContract) {
     const trx = await Database.transaction();
+    const products = request.input("products");
 
     const orderPaylod = await request.validate(CreateOrderValidator);
-    const products = request.input("products");
 
     try {
       // Verificar se nesta comanda há um pedido em aberto
@@ -37,7 +37,7 @@ export default class OrdersController {
 
       //Atualizar o status da comanda para ocupada
 
-      const order: Order = await Order.create(
+      const order = await Order.create(
         {
           billId: orderPaylod.billId,
           paymentId: 1,
@@ -49,8 +49,6 @@ export default class OrdersController {
         },
         { client: trx }
       );
-
-      //Pegar todos os itens da requisição e cadastrar neste pedido acima.
 
       for (const currentProduct of products) {
         const product: Product = await Product.findByOrFail(
@@ -66,10 +64,10 @@ export default class OrdersController {
           { client: trx }
         );
       }
+
       await trx.commit();
 
       await this.regenerateValue(order.orderId);
-
       response.ok({
         message: "Pedido criado com sucesso",
       });
@@ -92,7 +90,7 @@ export default class OrdersController {
 
       await order.delete();
 
-      response.ok;
+      response.ok({ message: "Pedido deletado com sucesso" });
     } catch (error) {
       response.internalServerError({
         errors: [
@@ -258,6 +256,30 @@ export default class OrdersController {
       return true;
     } else {
       return false;
+    }
+  }
+
+  public async orderByBill({ params, response }: HttpContextContract) {
+    try {
+      const bill = await Bill.findByOrFail("bill_id", params.id);
+
+      const order = await Order.query()
+        .where("bill_id", bill.billId)
+        .andWhere("order_open", true)
+        .preload("products")
+        .first();
+
+      if (order == null) return response.noContent();
+
+      response.ok(order);
+    } catch (error) {
+      response.internalServerError({
+        errors: [
+          {
+            message: "Erro ao recuperar os itens dessa comanda",
+          },
+        ],
+      });
     }
   }
 }

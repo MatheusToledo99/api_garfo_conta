@@ -14,6 +14,7 @@ export default class Establishment extends BaseModel {
   @belongsTo(() => User, {
     localKey: "userId",
     foreignKey: "userId",
+    serializeAs: "user",
   })
   public userEstablishment: BelongsTo<typeof User>;
 }

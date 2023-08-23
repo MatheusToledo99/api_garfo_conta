@@ -2,7 +2,7 @@ import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import Order from "./Order";
 
 export default class Bill extends BaseModel {
-  @column({ isPrimary: true })
+  @column({ isPrimary: true, serializeAs: "billId" })
   public billId: number;
 
   @column({ serializeAs: "establishmentId" })
@@ -20,7 +20,7 @@ export default class Bill extends BaseModel {
     onQuery(query) {
       query.where("order_open", true);
     },
-    serializeAs: "orders",
+    serializeAs: "order",
   })
   public ordersOpen: HasMany<typeof Order>;
 }

@@ -24,7 +24,7 @@ export default class ProductsController {
         categoryId: productPayload.categoryId,
         unitId: productPayload.unitId,
         productName: productPayload.productName,
-        productId: productPayload.categoryId,
+        // productId: productPayload.categoryId,
         productImage: productPayload.productImage,
         productPrice: productPayload.productPrice,
         productDescription: productPayload.productDescription,
@@ -34,7 +34,6 @@ export default class ProductsController {
         message: "Produto cadastrado com sucesso",
       });
     } catch (error) {
-      console.log(error);
       response.internalServerError({
         errors: [
           {

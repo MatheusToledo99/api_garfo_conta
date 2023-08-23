@@ -45,7 +45,6 @@ export default class BillsController {
         message: "Comanda cadastrada com sucesso",
       });
     } catch (error) {
-      console.log(error);
       response.internalServerError({
         errors: [
           {
@@ -148,7 +147,9 @@ export default class BillsController {
     response,
   }: HttpContextContract) {
     try {
-      const bill = await Bill.query().where("establishment_id", params.id);
+      const bill = await Bill.query()
+        .where("establishment_id", params.id)
+        .orderBy("bill_name");
       response.ok({
         message: bill,
       });
@@ -172,7 +173,7 @@ export default class BillsController {
         .where("bill_id", params.id)
         .firstOrFail();
 
-      response.ok({ bill });
+      response.ok(bill);
     } catch (error) {
       response.internalServerError({
         errors: [
